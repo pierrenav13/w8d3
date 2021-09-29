@@ -123,6 +123,8 @@ Board.prototype._positionsToFlip = function(pos, color, dir, piecesToFlip){
     return [];
   } else if (!this.isOccupied([nextPosX, nextPosY])) {
     return [];
+  } else if (this.isValidPos([nextPosX, nextPosY]) && !this.isOccupied([nextPosX, nextPosY])){
+    return [];
   } else if (this.isMine([nextPosX, nextPosY], color)) {
     return piecesToFlip;
   } else {
@@ -140,14 +142,15 @@ Board.prototype.validMove = function (pos, color) {
   if (this.isOccupied(pos)) {
     return false;
   }
-  return this.DIRS.some(dir => {
+  let valid = false;
+  Board.DIRS.forEach(dir => {
     let validPos = this._positionsToFlip(pos, color, dir);
-    let x =
-    if (validPos[validPos.length - 1])
+    if (validPos.length > 0){
+      valid = true;
+    }
   })
+  return valid;
   
-  // this.DIRS.forEach(dir => {
-  //   this._positionsToFlip(pos, color, dir)}
 };
 
 /**
@@ -157,6 +160,42 @@ Board.prototype.validMove = function (pos, color) {
  * Throws an error if the position represents an invalid move.
  */
 Board.prototype.placePiece = function (pos, color) {
+  let moveX = pos[0];
+  let moveY = pos[1];
+  if(this.validMove(pos, color)){
+    Board.DIRS.forEach(dir => {
+      let positions = this._positionsToFlip(pos, color, dir);
+      //debugger
+      if (positions.length > 0){
+        positions.forEach(pos => {
+          //debugger
+          let x = pos[0];
+          let y = pos[1];
+          //debugger
+          this.grid[x][y].flip();
+        });
+      };
+    });
+    
+    this.grid[moveX][moveY] = new Piece(color);
+  }else{
+    throw new Error("Invalid move!");
+  };
+
+  // let isolated = false;
+  // Board.DIRS.forEach(dir => {
+  //   let x = pos[0] + dir[0];
+  //   let y = pos[1] + dir[1];
+
+  //   if (this.isOccupied([x, y])){
+  //     isolated = true;
+  //   }
+  //   // throw new Error("Invalid move!");
+  // });
+  // if(!isolated){
+  //   throw new Error("Invalid move!");
+  // }
+
 };
 
 /**
