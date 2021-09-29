@@ -137,6 +137,17 @@ Board.prototype._positionsToFlip = function(pos, color, dir, piecesToFlip){
  * color being flipped.
  */
 Board.prototype.validMove = function (pos, color) {
+  if (this.isOccupied(pos)) {
+    return false;
+  }
+  return this.DIRS.some(dir => {
+    let validPos = this._positionsToFlip(pos, color, dir);
+    let x =
+    if (validPos[validPos.length - 1])
+  })
+  
+  // this.DIRS.forEach(dir => {
+  //   this._positionsToFlip(pos, color, dir)}
 };
 
 /**
