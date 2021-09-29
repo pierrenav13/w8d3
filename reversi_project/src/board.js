@@ -35,7 +35,14 @@ Board.DIRS = [
  * Checks if a given position is on the Board.
  */
 Board.prototype.isValidPos = function (pos) {
-  
+  let x = pos[0];
+  let y = pos[1];
+
+  if (x < 0 || x > 7 || y < 0 || y > 7) {
+    return false;
+  } else {
+    return true;
+  }
 };
 
 /**
@@ -43,6 +50,14 @@ Board.prototype.isValidPos = function (pos) {
  * throwing an Error if the position is invalid.
  */
 Board.prototype.getPiece = function (pos) {
+  let x = pos[0];
+  let y = pos[1];
+
+  if (this.isValidPos(pos)) {
+    return this.grid[x][y];
+  } else {
+    throw new Error("Not valid pos!");
+  }
 };
 
 /**
@@ -50,12 +65,28 @@ Board.prototype.getPiece = function (pos) {
  * matches a given color.
  */
 Board.prototype.isMine = function (pos, color) {
+  let x = pos[0];
+  let y = pos[1];
+
+  if (this.grid[x][y] instanceof Piece) {
+    return this.grid[x][y].color === color;
+  } else {
+    return false;
+  }
 };
 
 /**
  * Checks if a given position has a piece on it.
  */
 Board.prototype.isOccupied = function (pos) {
+  let x = pos[0];
+  let y = pos[1];
+
+  if (this.grid[x][y] instanceof Piece) {
+    return true
+  } else {
+    return false;
+  }
 };
 
 /**
@@ -70,8 +101,34 @@ Board.prototype.isOccupied = function (pos) {
  * Returns empty array if it hits an empty position.
  *
  * Returns empty array if no pieces of the opposite color are found.
- */
+ * 
+ * Board.DIRS = [
+  [ 0,  1], [ 1,  1], [ 1,  0],
+  [ 1, -1], [ 0, -1], [-1, -1],
+  [-1,  0], [-1,  1]
+];
+/*
+  O X O O
+  X O X O
+  X X X O
+  O O X O
+*/
+
 Board.prototype._positionsToFlip = function(pos, color, dir, piecesToFlip){
+  let nextPosX = pos[0] + dir[0];
+  let nextPosY = pos[1] + dir[1];
+  piecesToFlip ||= [];
+
+  if (!this.isValidPos(pos)) {
+    return [];
+  } else if (!this.isOccupied([nextPosX, nextPosY])) {
+    return [];
+  } else if (this.isMine([nextPosX, nextPosY], color)) {
+    return piecesToFlip;
+  } else {
+    piecesToFlip.push([nextPosX, nextPosY]);
+    return this._positionsToFlip([nextPosX, nextPosY], color, dir, piecesToFlip);
+  }
 };
 
 /**
